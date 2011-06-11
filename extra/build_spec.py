@@ -1,6 +1,9 @@
 from cx_Freeze import setup, Executable
 import os
 import sys
+import site
+
+site.addsitedir(os.path.dirname(sys.path[0]))
 
 executable = Executable(
 									script="main.py",
@@ -15,6 +18,7 @@ executable = Executable(
 
 include_files = []
 root_dir = '.'
+
 
 resource_dir = os.path.join(root_dir, 'resources')
 include_files.append(os.path.join(root_dir, 'qt.conf'))
