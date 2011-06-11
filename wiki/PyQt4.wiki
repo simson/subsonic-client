@@ -1,0 +1,5 @@
+#summary One-sentence summary of this page.
+
+= What is: PyQt4 =
+
+[http://www.riverbankcomputing.co.uk/software/pyqt/intro PyQt4 intro from Riverbank]
