@@ -19,14 +19,14 @@ root_dir = '.'
 resource_dir = os.path.join(root_dir, 'resources')
 include_files.append(os.path.join(root_dir, 'qt.conf'))
 for root, dirs, files in os.walk(resource_dir):
-	if not os.path.basename(root).startswith('_'):
+	if not os.path.basename(root).startswith('_') and not '.svn' in root:
 		for file in files:
 			if not file.startswith('.') and not file.startswith('_'):
 				include_files.append(os.path.join(root, file))
 
 libvlc_dir = os.path.join(root_dir, 'libvlc')
 for root, dirs, files in os.walk(libvlc_dir):
-	if not os.path.basename(root).startswith('_'):
+	if not os.path.basename(root).startswith('_') and not '.svn' in root:
 		for file in files:
 			if not file.startswith('.') and not file.startswith('_'):
 				include_files.append(os.path.join(root, file))
