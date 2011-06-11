@@ -20,3 +20,4 @@
 ==Credits==
  * libsonic(Jay Deiman) - https://github.com/crustymonkey/py-sonic
  * libvlc and c-types wrapper (VideoLAN) - http://www.videolan.org
+ * PyQt4 (Riverbank/Nokia) - http://www.riverbankcomputing.co.uk/software/pyqt/intro
