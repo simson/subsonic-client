@@ -76,6 +76,7 @@ class MainWindow(windowClass):
 		self.restoreWindowState()
 		
 		self.instance = vlc.Instance()
+		self.player = self.instance.media_player_new()
 		#socket.setdefaulttimeout(5)
 		
 		self.connection = connection.Connection(server, user, passwd, port, path, 'subsonic-desktop')
