@@ -75,7 +75,10 @@ class MainWindow(windowClass):
 		
 		self.restoreWindowState()
 		
-		self.instance = vlc.Instance(vlc.plugin_path)
+		if sys.platform.startswith('linux'):
+			self.instance = vlc.Instance()
+		else:
+			self.instance = vlc.Instance(vlc.plugin_path)
 		self.player = self.instance.media_player_new()
 		
 		#socket.setdefaulttimeout(5)
