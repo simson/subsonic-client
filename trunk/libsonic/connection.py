@@ -199,7 +199,7 @@ class Connection(object):
         self._checkStatus(res)
         return res
 
-    def getIndexes(self , musicFolderId=None , ifModifiedSince=None):
+    def getIndexes(self , musicFolderId=None , ifModifiedSince=0):
         """
         since: 1.0.0
 
@@ -231,13 +231,8 @@ class Connection(object):
         methodName = 'getIndexes'
         viewName = '%s.view' % methodName
 
-        query = {}
-        if musicFolderId:
-            query['musicFolderId'] = musicFolderId
-        if ifModifiedSince:
-            query['ifModifiedSince'] = self._ts2milli(ifModifiedSince)
-        
-        q = self._getQueryDict(query)
+        q = self._getQueryDict({'musicFolderId': musicFolderId , 
+            'ifModifiedSince': self._ts2milli(ifModifiedSince)})
 
         req = self._getRequest(viewName , q)
         res = self._doInfoReq(req)
@@ -1020,10 +1015,11 @@ class Connection(object):
     def _doBinReq(self , req):
         res = self._opener.open(req)
         contType = res.info().getheader('Content-Type')
-        if contType.startswith('text/html') or \
-                contType.startswith('application/json'):
-            dres = json.loads(res.read())
-            return dres['subsonic-response']
+        if contType:
+            if contType.startswith('text/html') or \
+                    contType.startswith('application/json'):
+                dres = json.loads(res.read())
+                return dres['subsonic-response']
         return res
 
     def _checkStatus(self , result):
