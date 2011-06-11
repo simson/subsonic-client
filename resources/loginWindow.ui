@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>images/subsonic-logo.png</normaloff>images/subsonic-logo.png</iconset>
+    <normaloff>images/Subsonic.png</normaloff>images/Subsonic.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

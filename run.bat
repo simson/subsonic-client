@@ -1,2 +1,2 @@
-C:\python27\python.exe .\main.py
+C:\python27\python.exe .\main.pyw
 pause

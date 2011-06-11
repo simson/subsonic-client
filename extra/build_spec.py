@@ -6,7 +6,7 @@ import site
 site.addsitedir(os.path.dirname(sys.path[0]))
 
 executable = Executable(
-									script="main.py",
+									script="main.pyw",
 									icon='resources/images/icon.ico',
 									targetName='SubSonic-Client.exe',
 									base = "Win32GUI",
