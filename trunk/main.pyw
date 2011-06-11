@@ -95,6 +95,9 @@ class MainWindow(windowClass):
 		self.verticalSplitter.setStretchFactor(0, 0)
 		self.verticalSplitter.setStretchFactor(1, 100)
 		
+		self.playlistControlSplitter.setStretchFactor(0, 100)
+		self.playlistControlSplitter.setStretchFactor(1, 0)
+		
 		#Create models
 		self.artistModel = models.ArtistModel(self)
 		self.albumModel = models.AlbumModel(self)
@@ -119,6 +122,8 @@ class MainWindow(windowClass):
 		self.searchField.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
 		self.toolBar.insertWidget(self.actionSettings, self.searchField)
 		self.toolBar.insertSeparator(self.actionSettings)
+		
+		self.createTrayIcon()
 		
 		self.crumbArtistBtn.clicked.connect(partial(self.pageViews.setCurrentWidget, self.artistPage))
 		
@@ -196,6 +201,30 @@ class MainWindow(windowClass):
 		try:
 			self.horizontalSplitter.restoreState(self.settings.value('windowState_hSplit'))
 		except: pass
+	
+	def createTrayIcon(self):
+		self.tray = QtGui.QSystemTrayIcon(self)
+		self.tray.setIcon(QtGui.QIcon('images:Subsonic.png'))
+		self.tray.activated.connect(self.trayActivated)
+		
+		self.trayMenu = QtGui.QMenu(self)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_play_64.png'), 'Play', self.play)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_next_64.png'), 'Next song', self.playNextSong)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_previous_64.png'), 'Previous song', self.playPrevSong)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_pause_64.png'), 'Pause', self.pause)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_stop_64.png'), 'Stop', self.stop)
+		self.trayMenu.addAction(QtGui.QIcon('images:delete_64.png'), 'Quit', self.quit)
+		
+		self.tray.setContextMenu(self.trayMenu)
+		
+		self.tray.show()
+	
+	def trayActivated(self, reason):
+		if reason == 3:
+			self.showNormal()
+			self.activateWindow()
+			self.raise_()
+			self.setVisible(True)
 	
 	def tickEvent(self):
 		state = self.player.get_state()
@@ -486,6 +515,11 @@ class MainWindow(windowClass):
 		self.seekSlider.setEnabled(False)
 	
 	def closeEvent(self, event):
+		#Hide instead
+		self.hide()
+		event.ignore()
+	
+	def quit(self):
 		try:
 			f = open(clientPlaylist, 'wb')
 			pickle.dump(self.playlistModel._data, f)
@@ -496,7 +530,10 @@ class MainWindow(windowClass):
 		self.hide()
 		self.stop()
 		self.coverArtCache.loader.join()
-		event.accept()
+		
+		self.tray.hide()
+		QtGui.qApp.quit()
+		
 
 
 def startup(force=False):
