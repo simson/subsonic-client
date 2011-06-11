@@ -15,6 +15,7 @@
       * vlc/libvlc (Win32 already included in svn)
       * Python 2.6.X or 2.7.X
       * A subsonic server :)
+    BuildSteps
 
 ==Credits==
  * libsonic(Jay Deiman) - https://github.com/crustymonkey/py-sonic
