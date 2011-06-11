@@ -1,6 +1,15 @@
 #summary Main info page
 = Introduction =
 
-About
-build Steps
-Credits
+==About==
+
+==Build Steps==
+    ===Requirements===
+      *PyQt4 (4.5 or newer)
+      *vlc/libvlc (Win32 already included in svn)
+      *Python 2.6.X or 2.7.X
+      *A subsonic server :)
+
+==Credits==
+libsonic(Jay Deiman) - https://github.com/crustymonkey/py-sonic
+libvlc and c-types wrapper (VideoLAN) - http://www.videolan.org
