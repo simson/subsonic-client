@@ -1,0 +1,9 @@
+#summary How to build a distibution (Windows-32 bit)
+
+=Build guide - Windows=
+ # Install Python 2.6/7 (32 bit)
+ # Install cx_freeze (If you want to use the included build_spec.py)
+ # Copy the hooks.py file from .\extra to your cx_freeze install in site-packages. Overwrite the existing one (Make a backup if need be). The custom one I use excludes some of the specific packages that are added by cx_freeze for PyQt4 in the interest of build size.
+ # Run .\extra\build.bat to compile
+ 
+ That should be it, if there are any ommisions, please let me know.
