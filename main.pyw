@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This is only needed for Python v2 but is harmless for Python v3.
 import sip
 import os
