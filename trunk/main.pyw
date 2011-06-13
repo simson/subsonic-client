@@ -69,6 +69,7 @@ class LoginWindow(windowClass_login):
 
 class MainWindow(windowClass):
 	songEnded = QtCore.pyqtSignal()
+	currentSongChanged = QtCore.pyqtSignal(int)
 	
 	def __init__(self, server, port, path, user, passwd):
 		super(MainWindow, self).__init__()
@@ -117,6 +118,7 @@ class MainWindow(windowClass):
 		self.playlistTableView.setDropIndicatorShown(True)
 		
 		self.playlistModel.songsAdded.connect(self.playlistSongsAdded)
+		self.currentSongChanged.connect(self.playlistModel.currentSongChanged)
 		
 		self.searchField = QtGui.QLineEdit(self)
 		self.searchField.editingFinished.connect(self.updateSearchPage)
@@ -481,12 +483,13 @@ class MainWindow(windowClass):
 		
 	def setNowPlaying(self, song, playlistIndex):
 		self.nowPlaying = song
+		self.currentSongChanged.emit(playlistIndex)
 		self.playlistModel.currentTrack = playlistIndex
 		self.updateCoverArt()
 		self.playlistModel.niceReset()
 		
 		self.stream(self.nowPlaying.get('id'))
-		self.setWindowTitle('Subsonic Client :: %s - %s - %s'%(self.nowPlaying['title'], self.nowPlaying['album'], self.nowPlaying['artist']))
+		self.setWindowTitle('Subsonic Client :: %s - %s - %s'%(self.nowPlaying.get('title', 'Unknown'), self.nowPlaying.get('album', 'Unknown'), self.nowPlaying.get('artist', 'Unknown')))
 	
 	def getPixmap(self, coverId):
 		return self.coverArtCache.get(coverId)
@@ -579,6 +582,6 @@ def startup(force=False):
 		
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
-	QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('cleanlooks'))
+	#QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('cleanlooks'))
 	startup()
 	sys.exit(app.exec_())
