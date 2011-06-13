@@ -513,8 +513,11 @@ class MainWindow(windowClass):
 		self.stop()
 		
 		#Set up new media stream
-		self.media = self.instance.media_new(url.toString(), '--loop', '--http-caching=500')
-		self.player.set_media(self.media)
+		try:
+			self.media = self.instance.media_new(url.toString(), '--loop', '--http-caching=500')
+			self.player.set_media(self.media)
+		except:
+			print 'Error with setting up media!'
 		
 		self.seekSlider.setEnabled(False)
 	
