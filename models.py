@@ -7,6 +7,9 @@ import cPickle as pickle
 from libsonic import connection
 
 
+def getAlbumsForArtist(connection, artistId):
+	albums = []
+	return albums
 
 def getSongsForAlbum(connection, albumId):
 	res = connection.getMusicDirectory(albumId)
@@ -282,7 +285,6 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		self._columns = ['#', 'Title', 'Album', 'Artist', 'Duration', 'Type']
 		self._data = []
 		self.nowPlayingIcon = QtGui.QIcon('images:video_play_64.png')
-		self.currentTrack = 0
 	
 	def mimeTypes(self):
 		return ['text/plain', 'application/x-pickledata']
@@ -315,6 +317,7 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		self.beginInsertRows(QtCore.QModelIndex(), start, end)
 		self._data = self._data[:start]+songs+self._data[start:]
 		self.endInsertRows()
+		self.songsAdded.emit(len(songs))
 	
 	def removeRows(self, start, count, parent):
 		end = start+count
@@ -333,9 +336,21 @@ class PlayListModel(QtCore.QAbstractTableModel):
 			return QtCore.Qt.ItemIsDragEnabled|QtCore.Qt.ItemIsDropEnabled|defaultFlags
 		else:
 			return QtCore.Qt.ItemIsDropEnabled|defaultFlags
+	
+	def currentSongChanged(self, index):
+		for item in self._data:
+			if item.has_key('nowPlaying'):
+				del item['nowPlaying']
+		self._data[index]['nowPlaying'] = True
 		
 	def nextSong(self, direction=1):
-		nextIndex = self.currentTrack+direction
+		currentIndex = [item.get('nowPlaying', False) for item in self._data].index(True)
+		nextIndex = currentIndex+direction
+		if nextIndex<0:
+			nextIndex = 0
+		elif nextIndex>self.rowCount():
+			nextIndex = self.rowCount()
+		
 		if self.hasIndex(nextIndex, 0, QtCore.QModelIndex()):
 			next = self.data(self.index(nextIndex, 0, QtCore.QModelIndex()), self.SongDataRole)
 			return next, nextIndex
@@ -371,7 +386,7 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		self._data = []
 		self.reset()
 	
-	def rowCount(self, parent):
+	def rowCount(self, parent=QtCore.QModelIndex()):
 		if parent.isValid():
 			return 0
 		else:
@@ -409,7 +424,7 @@ class PlayListModel(QtCore.QAbstractTableModel):
 			if index.column()==0:
 				return None #Album art
 			if index.column()==1:
-				if index.row() == self.currentTrack:
+				if item.get('nowPlaying', False):
 					return self.nowPlayingIcon
 		elif role == self.SongIdRole:
 			return item.get('id', None)
