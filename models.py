@@ -282,7 +282,7 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		super(PlayListModel, self).__init__(parent)
 		self.main = parent
 		self.coverArtCache = parent.coverArtCache
-		self._columns = ['#', 'Title', 'Album', 'Artist', 'Duration', 'Type']
+		self._columns = ['#', 'Title', 'Album', 'Artist', 'Duration', 'Bit-Rate', 'Type']
 		self._data = []
 		self.nowPlayingIcon = QtGui.QIcon('images:video_play_64.png')
 	
@@ -419,6 +419,8 @@ class PlayListModel(QtCore.QAbstractTableModel):
 				timedelta = datetime.timedelta(seconds=seconds)
 				return str(timedelta).lstrip('0:')
 			elif index.column()==5:
+				return item.get('bitRate', 'variable')
+			elif index.column()==6:
 				return item.get('suffix', 'Uknown')
 		elif role == QtCore.Qt.DecorationRole:
 			if index.column()==0:
