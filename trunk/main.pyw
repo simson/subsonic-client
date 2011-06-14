@@ -479,7 +479,7 @@ class MainWindow(windowClass):
 			root.setText(0, 'Albums')
 			root.setExpanded(True)
 			
-			print albums[0]
+			#print albums[0]
 			for data in albums:
 				data = models.itemDecodeHtml(data)
 				item = QtGui.QTreeWidgetItem(root)
@@ -495,7 +495,7 @@ class MainWindow(windowClass):
 			root.setText(0, 'Songs')
 			root.setExpanded(True)
 			
-			print songs[0]
+			#print songs[0]
 			for data in songs:
 				data = models.itemDecodeHtml(data)
 				item = QtGui.QTreeWidgetItem(root)

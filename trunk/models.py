@@ -229,17 +229,13 @@ class TrackModel(QtCore.QAbstractTableModel):
 	def mimeData(self, indices):
 		mimeData = QtCore.QMimeData()
 		text = []
-		data = {}
-		data['type'] = 'songs'
-		
-		songs = []
+		data = {'type':'song', 'data':[]}
 		for index in indices:
 			if not index.column()==0:
 				continue
 			item = self.data(index, self.SongDataRole)
 			text.append('%s - %s - %s'%(item.get('artist', 'Unknown'), item.get('album', 'Unknown'), item.get('title', 'Unknown')))
-			songs.append(item)
-		data['data'] = songs
+			data['data'].append(item)
 		
 		mimeData.setText('\n'.join(text))
 		mimeData.setData('application/x-pickledata', pickle.dumps(data))
@@ -354,7 +350,9 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	
 	def dropMimeData(self, data, action, row, column, index):
 		data = pickle.loads(str(data.data('application/x-pickledata')))
-		self.loadSongs(index.row(), data.get('data'), data.get('type'))
+		items = data.get('data')
+		dataType = data.get('type')
+		self.loadSongs(index.row(), items, dataType)
 		return True
 	
 	def loadSongs(self, row, items, itemType='artist'):
