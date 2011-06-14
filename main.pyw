@@ -126,6 +126,7 @@ class MainWindow(windowClass):
 		#self.playlistTableView.activeSongChanged.connect(self.activeSongChanged)
 		#self.playlistTableView.activeSongChanged.connect(self.activeSongChanged)
 		
+		self.playlistModel.playlistCleared.connect(self.stop)
 		self.playlistModel.songsAdded.connect(self.playlistSongsAdded)
 		self.currentSongChanged.connect(self.playlistModel.currentSongChanged)
 		
@@ -169,7 +170,8 @@ class MainWindow(windowClass):
 		self.muteBtn.clicked.connect(self.setMute)
 		self.trackPrevBtn.clicked.connect(self.playPrevSong)
 		self.trackNextBtn.clicked.connect(self.playNextSong)
-		self.clearPlaylistBtn.clicked.connect(self.clearPlaylist)
+		self.playlistClearBtn.clicked.connect(self.clearPlaylist)
+		self.playlistShuffleBtn.clicked.connect(self.playlistModel.shuffle)
 		
 		self.seekSlider.sliderMoved.connect(self.seek)
 		self.seekSlider.sliderPressed.connect(self.startSeek)
@@ -193,6 +195,8 @@ class MainWindow(windowClass):
 			f.close()
 			self.playlistModel.addSongs(songs)
 		except: pass #Didnt exist, or error loading playlists. Not a big deal..
+		
+		self.playlistModel.loadRandomSongs()
 		
 		self.timer = QtCore.QTimer(self)
 		self.timer.setInterval(100)
