@@ -123,7 +123,7 @@ QTableView#playlistTableView{
        </property>
        <widget class="QStackedWidget" name="pageViews">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="artistPage">
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -149,6 +149,9 @@ QTableView#playlistTableView{
             </property>
             <property name="alternatingRowColors">
              <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
             <property name="iconSize">
              <size>

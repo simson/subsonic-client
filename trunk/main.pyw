@@ -117,11 +117,17 @@ class MainWindow(windowClass):
 		self.playlistTableView.viewport().setAcceptDrops(True)
 		self.playlistTableView.setDropIndicatorShown(True)
 		
+		self.albumModel.activeArtistChanged.connect(self.activeArtistChanged)
+		self.trackModel.activeAlbumChanged.connect(self.activeAlbumChanged)
+		#self.playlistTableView.activeSongChanged.connect(self.activeSongChanged)
+		#self.playlistTableView.activeSongChanged.connect(self.activeSongChanged)
+		
 		self.playlistModel.songsAdded.connect(self.playlistSongsAdded)
 		self.currentSongChanged.connect(self.playlistModel.currentSongChanged)
 		
 		self.searchField = QtGui.QLineEdit(self)
 		self.searchField.editingFinished.connect(self.updateSearchPage)
+		self.searchField.returnPressed.connect(self.showSearchResultsPage)
 		self.searchField.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
 		self.toolBar.insertWidget(self.actionSettings, self.searchField)
 		self.toolBar.insertSeparator(self.actionSettings)
@@ -206,28 +212,48 @@ class MainWindow(windowClass):
 		except: pass
 	
 	def createTrayIcon(self):
-		self.tray = QtGui.QSystemTrayIcon(self)
+		self.tray = QtGui.QSystemTrayIcon()
 		self.tray.setIcon(QtGui.QIcon('images:Subsonic.png'))
 		self.tray.activated.connect(self.trayActivated)
 		
-		self.trayMenu = QtGui.QMenu(self)
+		self.trayMenu = QtGui.QMenu()
 		self.trayMenu.addAction(QtGui.QIcon('images:video_play_64.png'), 'Play', self.play)
-		self.trayMenu.addAction(QtGui.QIcon('images:video_next_64.png'), 'Next song', self.playNextSong)
-		self.trayMenu.addAction(QtGui.QIcon('images:video_previous_64.png'), 'Previous song', self.playPrevSong)
 		self.trayMenu.addAction(QtGui.QIcon('images:video_pause_64.png'), 'Pause', self.pause)
 		self.trayMenu.addAction(QtGui.QIcon('images:video_stop_64.png'), 'Stop', self.stop)
-		self.trayMenu.addAction(QtGui.QIcon('images:delete_64.png'), 'Quit', self.quit)
+		self.trayMenu.addSeparator()
 		
-		self.tray.setContextMenu(self.trayMenu)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_next_64.png'), 'Next song', self.playNextSong)
+		self.trayMenu.addAction(QtGui.QIcon('images:video_previous_64.png'), 'Previous song', self.playPrevSong)
+		self.trayMenu.addSeparator()
+		
+		self.trayMenu.addAction(QtGui.QIcon('images:delete_64.png'), 'Quit', self.quit)
 		
 		self.tray.show()
 	
 	def trayActivated(self, reason):
-		if reason == 3:
-			self.showNormal()
-			self.activateWindow()
-			self.raise_()
-			self.setVisible(True)
+		if reason == QtGui.QSystemTrayIcon.Trigger:
+			#Left click
+			if sys.platform.startswith('linux'):
+				self.showTrayMenu()
+			else:
+				self.restore()
+		if reason == QtGui.QSystemTrayIcon.Context:
+			#Context menu
+			if sys.platform.startswith('win'):
+				self.showTrayMenu()
+			else:
+				self.restore()
+			
+	def showTrayMenu(self):
+		point = self.tray.geometry().topLeft()
+		self.trayMenu.move(point)
+		self.trayMenu.exec_(point)
+	
+	def restore(self):
+		self.showNormal()
+		self.activateWindow()
+		self.raise_()
+		self.setVisible(True)
 	
 	def tickEvent(self):
 		state = self.player.get_state()
@@ -256,6 +282,17 @@ class MainWindow(windowClass):
 			else:
 				self.songEnded.emit()
 	
+	def activeArtistChanged(self, name, albums):
+		print 'New active artist:', name
+		self.crumbArtistBtn.setText('Back to: %s'%name)
+	
+	def activeAlbumChanged(self, name, songs):
+		print 'New active album:', name
+		pass
+	
+	#def activeSongChanged(self, name, song):
+	#	print 'New active song:', song
+	
 	def songEndReached(self, event):
 		self.songEnded.emit()
 	
@@ -268,7 +305,6 @@ class MainWindow(windowClass):
 			self.setNowPlaying(song, row)
 			if self.autoPlay:
 				self.play()
-			
 	
 	def playPrevSong(self):
 		nextSong, nextIndex = self.playlistModel.nextSong(-1)
@@ -357,9 +393,8 @@ class MainWindow(windowClass):
 			return
 		index = index[0]
 		artistId = self.artistModel.data(index, self.artistModel.ArtistIdRole)
-		artistName = self.artistModel.data(index)
 		
-		self.albumModel.loadArtist(artistId)
+		self.setActiveArtist(artistId)
 	
 	def artistDoubleClicked(self):
 		self.showArtistPage()
@@ -371,12 +406,7 @@ class MainWindow(windowClass):
 	def albumSelected(self):
 		index = self.albumListView.currentIndex()
 		album = self.albumModel.data(index, self.albumModel.AlbumDataRole)
-		
-		self.nowSelected = album
-		self.updateCoverArt()
-		self.crumbArtistBtn.setText(u'%s :: %s'%(album.get('artist', 'Unknown'), album.get('title', 'Unknown')))
-		
-		self.trackModel.loadAlbum(album.get('id'))
+		self.setActiveAlbum(album.get('id'))
 	
 	def albumDoubleClicked(self):
 		self.showAlbumPage()
@@ -476,10 +506,17 @@ class MainWindow(windowClass):
 	def searchItemDoubleClicked(self, item, column):
 		data = item.data
 		print data
-		if data.get('isDir'):
-			self.showArtistPage()
-		else:
-			self.showAlbumPate()
+		#if data.get('isDir'):
+		#	self.showArtistPage(data.get('id'))
+		#else:
+		#	self.setActiveAlbum(data.get('id'))
+		#	self.showAlbumPage()
+	
+	def setActiveArtist(self, artistId):
+		self.albumModel.loadArtist(artistId)
+		
+	def setActiveAlbum(self, albumId):
+		self.trackModel.loadAlbum(albumId)
 		
 	def setNowPlaying(self, song, playlistIndex):
 		self.nowPlaying = song

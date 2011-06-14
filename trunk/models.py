@@ -7,11 +7,23 @@ import cPickle as pickle
 from libsonic import connection
 
 
-def getAlbumsForArtist(connection, artistId):
-	albums = []
-	return albums
+def getArtistData(connection, artistId):
+	artist = connection.getMusicDirectory(artistId)
+	directories = artist.get('directory', {}).get('child', [])
+	if not isinstance(directories, list):
+		directories = [directories]
+	albums = [itemDecodeHtml(dir) for dir in directories if dir.get('isDir', False)]
+	if len(albums)!=len(directories):
+		tracks = [itemDecodeHtml(item) for item in directories if not item.get('isDir', False)]
+		artist = {
+			'title':tracks[0].get('album', 'Unknown'),
+			'id':artistId,
+			'coverArt':tracks[0].get('coverArt', ''),
+					}
+		albums.append(artist)
+	return albums, artist
 
-def getSongsForAlbum(connection, albumId):
+def getAlbumData(connection, albumId):
 	res = connection.getMusicDirectory(albumId)
 	songs = res.get('directory', {}).get('child', [])
 	if not isinstance(songs, list):
@@ -24,11 +36,13 @@ def getSongsForAlbum(connection, albumId):
 		if unicode(song.get('title', '')).lower() not in [unicode(track.get('title', '')).lower() for track in uniqueSongs]:
 			uniqueSongs.append(itemDecodeHtml(song))
 	songs = uniqueSongs[:]
-	return songs
+	return songs, res
 
 
 class ArtistModel(QtCore.QAbstractListModel):
 	ArtistIdRole = QtCore.Qt.UserRole+1
+	ArtistDataRole = QtCore.Qt.UserRole+2
+	
 	def __init__(self, parent):
 		super(ArtistModel, self).__init__(parent)
 		self.main = parent
@@ -38,6 +52,23 @@ class ArtistModel(QtCore.QAbstractListModel):
 	
 	def flags(self, index):
 		return QtCore.Qt.ItemIsDragEnabled|QtCore.Qt.ItemIsDropEnabled|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
+	
+	def mimeTypes(self):
+		return ['text/plain', 'application/x-pickledata']
+	
+	def mimeData(self, indices):
+		mimeData = QtCore.QMimeData()
+		text = []
+		data = {'type':'artist', 'data':[]}
+		for index in indices:
+			item = self.data(index, self.ArtistDataRole)
+			
+			text.append(item.get('name'))
+			data['data'].append(item.get('id'))
+			
+		mimeData.setText('\n'.join(text))
+		mimeData.setData('application/x-pickledata', pickle.dumps(data))
+		return mimeData
 	
 	def populate(self):
 		res = self.main.connection.getIndexes()
@@ -66,6 +97,8 @@ class ArtistModel(QtCore.QAbstractListModel):
 				return item['name']
 		elif role == self.ArtistIdRole:
 			return item['id']
+		elif role == self.ArtistDataRole:
+			return item
 
 class AlbumModel(QtCore.QAbstractListModel):
 	AlbumIdRole = QtCore.Qt.UserRole+1
@@ -73,12 +106,16 @@ class AlbumModel(QtCore.QAbstractListModel):
 	AlbumPixmapRole = QtCore.Qt.UserRole+3
 	AlbumDataRole = QtCore.Qt.UserRole+4
 	
-	artistAsyncLoaded = QtCore.pyqtSignal(str, list)
+	artistAsyncLoaded = QtCore.pyqtSignal(str, list, dict)
+	activeArtistChanged = QtCore.pyqtSignal(str, list)
+	
 	def __init__(self, parent):
 		super(AlbumModel, self).__init__(parent)
 		self.main = parent
-		self._artists = {}
+		
 		self._data = []
+		self._albumsData = {}
+		
 		self.currentArtistId = None
 		self.coverArtCache = parent.coverArtCache
 		self.coverArtCache.coverArtLoaded.connect(self.coverArtLoaded)
@@ -95,11 +132,11 @@ class AlbumModel(QtCore.QAbstractListModel):
 	def mimeData(self, indices):
 		mimeData = QtCore.QMimeData()
 		text = []
-		data = []
+		data = {'type':'album', 'data':[]}
 		for index in indices:
 			item = self.data(index, self.AlbumDataRole)
-			#This is slow and lags the cursor when dragging an album, should send the id instead and have qt handle the album load in a thread on drop.
-			data.extend(getSongsForAlbum(self.main.connection, item.get('id')))
+			text.append(item.get('title'))
+			data['data'].append(item.get('id'))
 			
 		mimeData.setText('\n'.join(text))
 		mimeData.setData('application/x-pickledata', pickle.dumps(data))
@@ -109,30 +146,23 @@ class AlbumModel(QtCore.QAbstractListModel):
 		if artistId == self.currentArtistId:
 			return
 		self.currentArtistId = artistId
-		
 		thread = threading.Thread(target=self.threadedArtistLoad, args=(artistId,))
 		thread.start()
 	
-	def artistLoaded(self, artistId, folders):
+	def artistLoaded(self, artistId, folders, artistData):
 		if artistId == self.currentArtistId:
 			self._data = folders
+			self._artistData = artistData
 			self.reset()
+			if artistData.has_key('title'):
+				artistName = artistData.get('title')
+			else:
+				artistName = artistData.get('directory').get('name', 'Unknown')
+			self.activeArtistChanged.emit(fromHtmlEncoding(artistName), folders)
 	
 	def threadedArtistLoad(self, artistId):
-		artist = self.main.connection.getMusicDirectory(artistId)
-		directories = artist.get('directory', {}).get('child', [])
-		if not isinstance(directories, list):
-			directories = [directories]
-		folders = [itemDecodeHtml(dir) for dir in directories if dir.get('isDir', False)]
-		if len(folders)!=len(directories):
-			tracks = [itemDecodeHtml(item) for item in directories if not item.get('isDir', False)]
-			artist = {
-				'title':tracks[0].get('album', 'Unknown'),
-				'id':artistId,
-				'coverArt':tracks[0].get('coverArt', ''),
-						}
-			folders.append(artist)
-		self.artistAsyncLoaded.emit(artistId, folders)
+		folders, artist = getArtistData(self.main.connection, artistId)
+		self.artistAsyncLoaded.emit(artistId, folders, artist)
 	
 	def rowCount(self, parent):
 		if parent.isValid():
@@ -176,7 +206,10 @@ class TrackModel(QtCore.QAbstractTableModel):
 	AlbumCoverArtIdRole = QtCore.Qt.UserRole+2
 	AlbumPixmapRole = QtCore.Qt.UserRole+3
 	SongDataRole = QtCore.Qt.UserRole+4
-	albumAsyncLoaded = QtCore.pyqtSignal(str, list)
+	
+	albumAsyncLoaded = QtCore.pyqtSignal(str, list, dict)
+	activeAlbumChanged = QtCore.pyqtSignal(str, list)
+	
 	def __init__(self, parent):
 		super(TrackModel, self).__init__(parent)
 		self.main = parent
@@ -184,6 +217,7 @@ class TrackModel(QtCore.QAbstractTableModel):
 		self.albumAsyncLoaded.connect(self.albumLoaded)
 		self.currentAlbumId = None
 		self._columns = ['#', 'Title', 'Album', 'Artist', 'Duration', 'Type']
+		
 		self._data = []
 	
 	def flags(self, index):
@@ -195,14 +229,18 @@ class TrackModel(QtCore.QAbstractTableModel):
 	def mimeData(self, indices):
 		mimeData = QtCore.QMimeData()
 		text = []
-		data = []
+		data = {}
+		data['type'] = 'songs'
+		
+		songs = []
 		for index in indices:
 			if not index.column()==0:
 				continue
 			item = self.data(index, self.SongDataRole)
 			text.append('%s - %s - %s'%(item.get('artist', 'Unknown'), item.get('album', 'Unknown'), item.get('title', 'Unknown')))
-			data.append(item)
-			
+			songs.append(item)
+		data['data'] = songs
+		
 		mimeData.setText('\n'.join(text))
 		mimeData.setData('application/x-pickledata', pickle.dumps(data))
 		return mimeData
@@ -210,20 +248,26 @@ class TrackModel(QtCore.QAbstractTableModel):
 	def loadAlbum(self, albumId):
 		if albumId == self.currentAlbumId:
 			return
+		
 		self._data = []
-		self.reset()
+		self._albumData = {}
 		self.currentAlbumId = albumId
+		
+		self.reset()
 		thread = threading.Thread(target=self.threadedAlbumLoad, args=(albumId, ))
 		thread.start()
-			
-	def threadedAlbumLoad(self, albumId):
-		songs = getSongsForAlbum(self.main.connection, albumId)
-		self.albumAsyncLoaded.emit(albumId, songs)
 	
-	def albumLoaded(self, albumId, songs):
+	def albumLoaded(self, albumId, songs, albumData):
 		if albumId == self.currentAlbumId:
 			self._data = songs
+			self._albumData = albumData
 			self.reset()
+			albumName = albumData.get('directory').get('name', 'Unknown')
+			self.activeAlbumChanged.emit(fromHtmlEncoding(albumName), songs)
+	
+	def threadedAlbumLoad(self, albumId):
+		songs, albumData = getAlbumData(self.main.connection, albumId)
+		self.albumAsyncLoaded.emit(albumId, songs, albumData)
 	
 	def rowCount(self, parent):
 		if parent.isValid():
@@ -278,12 +322,16 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	SongDataRole = QtCore.Qt.UserRole+4
 	
 	songsAdded = QtCore.pyqtSignal(int)
+	asyncSongsLoaded = QtCore.pyqtSignal(int, list)
+	
 	def __init__(self, parent):
 		super(PlayListModel, self).__init__(parent)
 		self.main = parent
 		self.coverArtCache = parent.coverArtCache
 		self._columns = ['#', 'Title', 'Album', 'Artist', 'Duration', 'Bit-Rate', 'Type']
 		self._data = []
+		
+		self.asyncSongsLoaded.connect(self.songsLoaded)
 		self.nowPlayingIcon = QtGui.QIcon('images:video_play_64.png')
 	
 	def mimeTypes(self):
@@ -292,22 +340,51 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	def mimeData(self, indices):
 		mimeData = QtCore.QMimeData()
 		text = []
-		data = []
+		data = {'type':'song', 'data':[]}
 		for index in indices:
 			if not index.column()==0:
 				continue
 			item = self.data(index, self.SongDataRole)
 			text.append('%s - %s - %s'%(item.get('artist', 'Unknown'), item.get('album', 'Unknown'), item.get('title', 'Unknown')))
-			data.append(item)
+			data['data'].append(item)
 			
 		mimeData.setText('\n'.join(text))
 		mimeData.setData('application/x-pickledata', pickle.dumps(data))
 		return mimeData
 	
 	def dropMimeData(self, data, action, row, column, index):
-		songs = pickle.loads(str(data.data('application/x-pickledata')))
-		self.insertData(index.row(), songs)
-		return False
+		data = pickle.loads(str(data.data('application/x-pickledata')))
+		self.loadSongs(index.row(), data.get('data'), data.get('type'))
+		return True
+	
+	def loadSongs(self, row, items, itemType='artist'):
+		if itemType=='song':
+			self.songsLoaded(row, items)
+		else:
+			thread = threading.Thread(target=self.threadedSongLoad, args=(row, items, itemType))
+			thread.start()
+	
+	def songsLoaded(self, row, songs):
+		self.insertData(row, songs)
+	
+	def threadedSongLoad(self, row, items, itemType='artist'):
+		#If it's an artist, load it's albums, and then for each album load it's songs
+		#If it's an album, loads it's songs
+		songs = []
+		albums = []
+		if itemType == 'artist':
+			for artistId in items:
+				artistAlbums, artistData = getArtistData(self.main.connection, artistId)
+				albums.extend([album.get('id') for album in artistAlbums])
+		if itemType == 'album':
+			albums = items
+		
+		for albumId in albums:
+			albumSongs, albumData = getAlbumData(self.main.connection, albumId)
+			songs.extend(albumSongs)
+				
+		self.asyncSongsLoaded.emit(row, songs)
+	
 	
 	def insertData(self, row, songs):
 		if row<0:
