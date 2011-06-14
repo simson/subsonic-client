@@ -303,7 +303,7 @@ class TrackModel(QtCore.QAbstractTableModel):
 				timedelta = datetime.timedelta(seconds=seconds)
 				nice = str(timedelta).lstrip('0:')
 				if not ':' in nice:
-					nide = '0:'+nice
+					nice = '0:'+nice
 				return nice
 			elif index.column()==5:
 				return item.get('suffix', 'Uknown')
@@ -534,7 +534,7 @@ class PlayListModel(QtCore.QAbstractTableModel):
 				timedelta = datetime.timedelta(seconds=seconds)
 				nice = str(timedelta).lstrip('0:')
 				if not ':' in nice:
-					nide = '0:'+nice
+					nice = '0:'+nice
 				return nice
 			elif index.column()==5:
 				return item.get('bitRate', 'variable')
