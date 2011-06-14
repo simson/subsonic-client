@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
+    <width>1097</width>
     <height>782</height>
    </rect>
   </property>
@@ -74,11 +74,18 @@ QAbstractItemView::item:hover {
 	color: rgb(255, 180, 30);
 }
 
-QSplitter::handle{
+QSplitter::handle:horizontal{
 	background-color: rgba(0, 0, 0, 80);
 	border-radius: 1px;
-	image: url(&quot;images:handle.png&quot;);
+	image: url(&quot;images:handle_vertical.png&quot;);
 }
+
+QSplitter::handle:vertical{
+	background-color: rgba(0, 0, 0, 80);
+	border-radius: 1px;
+	image: url(&quot;images:handle_horizontal.png&quot;);
+}
+
 
 /*Item-view headers*/
  QHeaderView::section {
@@ -109,7 +116,7 @@ QSplitter::handle{
 }
 
 
-/*Scroll bars*/
+/*Scroll bars - Vertical*/
 QScrollBar:vertical {
 	width: 16px;
 	padding: 22px 0px 22px 0px;
@@ -119,7 +126,7 @@ QScrollBar:vertical {
  QScrollBar::handle:vertical {
 	border-radius: 2px;
 	min-height: 20px;
-	image: url(&quot;images:handle.png&quot;);
+	image: url(&quot;images:handle_horizontal.png&quot;);
 	background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
 	border-top: 1px solid rgba(97, 97, 97, 100);
  }
@@ -148,6 +155,49 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 	background: none;
 }
 
+/*Scroll bars - Horizontal*/
+QScrollBar:horizontal {
+	background: qlineargradient(spread:pad, x1:1, y1:1, x2:1, y2:0, stop:0.0112994 rgba(15, 15,15, 100), stop:1 rgba(91, 91, 91, 100));
+	height: 16px;
+	padding: 0px 22px 0px 22px;
+}
+
+ QScrollBar::handle:horizontal {
+	border-radius: 2px;
+	min-width: 20px;
+	image: url(&quot;images:handle_vertical.png&quot;);
+	background: qlineargradient(spread:pad, x1:1, y1:1, x2:1, y2:0, stop:0.0112994 rgba(15, 15,15, 100), stop:1 rgba(91, 91, 91, 100));
+	border-left: 1px solid rgba(97, 97, 97, 100);
+ }
+
+
+QScrollBar::sub-line:horizontal {
+	border-radius: 2px;
+	image: url(&quot;images:leftarrow.png&quot;);
+	min-width: 17px;
+	subcontrol-origin: margin;
+	background: qlineargradient(spread:pad, x1:1, y1:1, x2:1, y2:0, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
+	right: 2px;
+	border-left: 1px solid rgba(97, 97, 97, 100);
+ 	subcontrol-position: left;
+	subcontrol-origin: margin;
+ }
+
+ QScrollBar::add-line:horizontal {
+	border-radius: 2px;
+	image: url(&quot;images:rightarrow.png&quot;);
+	min-width: 17px;
+	subcontrol-origin: margin;
+	background: qlineargradient(spread:pad, x1:1, y1:1, x2:1, y2:0, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
+	left: 2px;
+	border-left: 1px solid rgba(97, 97, 97, 100);
+	subcontrol-position: right;
+	subcontrol-origin: margin;
+ }
+
+ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+     background: none;
+ }
 
 /*Seek slider*/
  QSlider::groove:horizontal {
@@ -242,7 +292,7 @@ QSlider::sub-page:horizontal {
        </property>
        <widget class="QStackedWidget" name="pageViews">
         <property name="currentIndex">
-         <number>5</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="artistPage">
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -1002,6 +1052,12 @@ p, li { white-space: pre-wrap; }
              </item>
              <item>
               <widget class="QTableView" name="playlistTableView">
+               <property name="verticalScrollBarPolicy">
+                <enum>Qt::ScrollBarAsNeeded</enum>
+               </property>
+               <property name="horizontalScrollBarPolicy">
+                <enum>Qt::ScrollBarAsNeeded</enum>
+               </property>
                <property name="dragEnabled">
                 <bool>true</bool>
                </property>
@@ -1051,7 +1107,7 @@ p, li { white-space: pre-wrap; }
               <number>1</number>
              </property>
              <item>
-              <widget class="QPushButton" name="clearPlaylistBtn">
+              <widget class="QPushButton" name="playlistClearBtn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1089,7 +1145,7 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="clearPlaylistBtn_2">
+              <widget class="QPushButton" name="playlistShuffleBtn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1109,7 +1165,7 @@ p, li { white-space: pre-wrap; }
                 </size>
                </property>
                <property name="toolTip">
-                <string>Download playlist</string>
+                <string>Add song(s)</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
@@ -1122,50 +1178,12 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>images/arrow_down_64.png</normaloff>images/arrow_down_64.png</iconset>
+                 <normaloff>images/shuffle-icon.png</normaloff>images/shuffle-icon.png</iconset>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="clearPlaylistBtn_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>24</width>
-                 <height>24</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>24</width>
-                 <height>24</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Save playlist</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton{
-	background-color: rgba(255, 255, 255, 0);
-	border:0px;
-}</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>images/book_bookmark_64.png</normaloff>images/book_bookmark_64.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="clearPlaylistBtn_4">
+              <widget class="QPushButton" name="playlistAddBtn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1203,7 +1221,7 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="clearPlaylistBtn_5">
+              <widget class="QPushButton" name="playlistRemoveBtn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1237,6 +1255,82 @@ p, li { white-space: pre-wrap; }
                <property name="icon">
                 <iconset>
                  <normaloff>images/minus_64.png</normaloff>images/minus_64.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="playlistSaveBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Save playlist</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>images/book_bookmark_64.png</normaloff>images/book_bookmark_64.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="playlistDownloadBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Download playlist</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>images/arrow_down_64.png</normaloff>images/arrow_down_64.png</iconset>
                </property>
               </widget>
              </item>

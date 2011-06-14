@@ -3,6 +3,7 @@ import threading
 import collections
 import time
 import datetime
+import random
 import cPickle as pickle
 from libsonic import connection
 
@@ -321,8 +322,10 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	AlbumPixmapRole = QtCore.Qt.UserRole+3
 	SongDataRole = QtCore.Qt.UserRole+4
 	
+	playlistCleared = QtCore.pyqtSignal()
 	songsAdded = QtCore.pyqtSignal(int)
 	asyncSongsLoaded = QtCore.pyqtSignal(int, list)
+	asyncRandomSongsLoaded = QtCore.pyqtSignal(list)
 	
 	def __init__(self, parent):
 		super(PlayListModel, self).__init__(parent)
@@ -332,7 +335,9 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		self._data = []
 		
 		self.asyncSongsLoaded.connect(self.songsLoaded)
+		self.asyncRandomSongsLoaded.connect(self.randomSongsLoaded)
 		self.nowPlayingIcon = QtGui.QIcon('images:video_play_64.png')
+		self.random = False
 	
 	def mimeTypes(self):
 		return ['text/plain', 'application/x-pickledata']
@@ -357,9 +362,28 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		items = data.get('data')
 		dataType = data.get('type')
 		self.loadSongs(index.row(), items, dataType)
+		self.random = False
 		return True
 	
+	def loadRandomSongs(self, add=False):
+		if not add:
+			self.clearPlaylist()
+		thread = threading.Thread(target=self.threadedRandomSongLoad)
+		thread.start()
+	
+	def randomSongsLoaded(self, songs):
+		self.addSongs(songs, True)
+	
+	def threadedRandomSongLoad(self, count=500, batch=10):
+		for i in range(count/batch):
+			res = self.main.connection.getRandomSongs(size=batch)
+			songs = res.get('randomSongs', {}).get('song')
+			if not isinstance(songs, list):
+				songs = [songs]
+			self.asyncRandomSongsLoaded.emit(songs)
+	
 	def loadSongs(self, row, items, itemType='artist'):
+		self.random = False
 		if itemType=='song':
 			self.songsLoaded(row, items)
 		else:
@@ -387,6 +411,9 @@ class PlayListModel(QtCore.QAbstractTableModel):
 				
 		self.asyncSongsLoaded.emit(row, songs)
 	
+	def shuffle(self):
+		random.shuffle(self._data)
+		self.niceReset()
 	
 	def insertData(self, row, songs):
 		if row<0:
@@ -438,11 +465,12 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	def loadPlaylist(self, playlistId):
 		pass
 	
-	def addSongs(self, songs):
+	def addSongs(self, songs, random=False):
 		if not isinstance(songs, list):
 			songs = [songs]
 		
 		if songs:
+			self.random = random
 			start = len(self._data)
 			end = start+len(songs)-1
 			self.beginInsertRows(QtCore.QModelIndex(), start, end)
@@ -463,7 +491,9 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	def clearPlaylist(self):
 		self.currentSong = 0
 		self._data = []
+		self.random = False
 		self.reset()
+		self.playlistCleared.emit()
 	
 	def rowCount(self, parent=QtCore.QModelIndex()):
 		if parent.isValid():
