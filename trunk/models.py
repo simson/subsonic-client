@@ -154,11 +154,15 @@ class AlbumModel(QtCore.QAbstractListModel):
 			self._data = folders
 			self._artistData = artistData
 			self.reset()
-			if artistData.has_key('title'):
-				artistName = artistData.get('title')
-			else:
-				artistName = artistData.get('directory').get('name', 'Unknown')
-			self.activeArtistChanged.emit(fromHtmlEncoding(artistName), folders)
+			
+			self.activeArtistChanged.emit(self.currentArtistName(), folders)
+	
+	def currentArtistName(self):
+		if self._artistData.has_key('title'):
+			artistName = self._artistData.get('title')
+		else:
+			artistName = self._artistData.get('directory').get('name', 'Unknown')
+		return fromHtmlEncoding(artistName)
 	
 	def threadedArtistLoad(self, artistId):
 		folders, artist = getArtistData(self.main.connection, artistId)
@@ -616,6 +620,6 @@ def itemDecodeHtml(item):
 
 def fromHtmlEncoding(text):
 	doc = QtGui.QTextDocument()
-	doc.setHtml(text)
+	doc.setHtml(unicode(text))
 	return doc.toPlainText()
 	
