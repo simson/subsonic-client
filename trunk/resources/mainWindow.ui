@@ -41,6 +41,24 @@ QGroupBox{
 	padding-top: 10px;
 }
 
+/*style buttons*/
+QPushButton{
+	border: 1px solid rgab(0, 0, 180, 50);
+	border-radius: 5px;
+	background-color: rgba(0, 0, 180, 60);
+	color: rgb(103, 202, 255);
+	min-height: 18px;
+ }
+
+QPushButton:pressed {
+	background-color: rgba(0, 0, 190, 80);
+}
+
+QPushButton:hover{
+	color: rgb(255, 180, 30);
+}
+
+
 /*Transparent scroll areas*/
 QAbstractScrollArea{
 	background-color: rgba(0, 0, 0, 0);
@@ -610,7 +628,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb
                <x>14</x>
                <y>260</y>
                <width>131</width>
-               <height>23</height>
+               <height>24</height>
               </rect>
              </property>
              <property name="text">
@@ -776,8 +794,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -817,8 +835,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -855,8 +873,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -893,8 +911,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -931,8 +949,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -997,8 +1015,8 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>24</width>
-                   <height>24</height>
+                   <width>0</width>
+                   <height>20</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -1101,7 +1119,7 @@ p, li { white-space: pre-wrap; }
               <number>0</number>
              </property>
              <property name="sizeConstraint">
-              <enum>QLayout::SetMaximumSize</enum>
+              <enum>QLayout::SetMinAndMaxSize</enum>
              </property>
              <property name="margin">
               <number>1</number>
@@ -1116,8 +1134,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">
@@ -1154,8 +1172,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">
@@ -1165,7 +1183,7 @@ p, li { white-space: pre-wrap; }
                 </size>
                </property>
                <property name="toolTip">
-                <string>Add song(s)</string>
+                <string>Shuffle playlist</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
@@ -1192,8 +1210,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">
@@ -1230,8 +1248,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">
@@ -1268,8 +1286,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">
@@ -1306,8 +1324,8 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>0</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="maximumSize">

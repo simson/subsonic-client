@@ -301,7 +301,10 @@ class TrackModel(QtCore.QAbstractTableModel):
 			elif index.column()==4:
 				seconds = item.get('duration', -1)
 				timedelta = datetime.timedelta(seconds=seconds)
-				return str(timedelta).lstrip('0:')
+				nice = str(timedelta).lstrip('0:')
+				if not ':' in nice:
+					nide = '0:'+nice
+				return nice
 			elif index.column()==5:
 				return item.get('suffix', 'Uknown')
 		elif role == QtCore.Qt.DecorationRole:
@@ -368,11 +371,13 @@ class PlayListModel(QtCore.QAbstractTableModel):
 	def loadRandomSongs(self, add=False):
 		if not add:
 			self.clearPlaylist()
+		self.random = True
 		thread = threading.Thread(target=self.threadedRandomSongLoad)
 		thread.start()
 	
 	def randomSongsLoaded(self, songs):
-		self.addSongs(songs, True)
+		if self.random:
+			self.addSongs(songs, True)
 	
 	def threadedRandomSongLoad(self, count=500, batch=10):
 		for i in range(count/batch):
@@ -405,11 +410,12 @@ class PlayListModel(QtCore.QAbstractTableModel):
 		if itemType == 'album':
 			albums = items
 		
+		total = 0
 		for albumId in albums:
 			albumSongs, albumData = getAlbumData(self.main.connection, albumId)
-			songs.extend(albumSongs)
-				
-		self.asyncSongsLoaded.emit(row, songs)
+			self.asyncSongsLoaded.emit(row+total, albumSongs)
+			total+=len(albumSongs)
+		
 	
 	def shuffle(self):
 		random.shuffle(self._data)
@@ -526,7 +532,10 @@ class PlayListModel(QtCore.QAbstractTableModel):
 			elif index.column()==4:
 				seconds = item.get('duration', -1)
 				timedelta = datetime.timedelta(seconds=seconds)
-				return str(timedelta).lstrip('0:')
+				nice = str(timedelta).lstrip('0:')
+				if not ':' in nice:
+					nide = '0:'+nice
+				return nice
 			elif index.column()==5:
 				return item.get('bitRate', 'variable')
 			elif index.column()==6:
