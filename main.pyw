@@ -77,6 +77,10 @@ class MainWindow(windowClass):
 		
 		self.restoreWindowState()
 		
+		if False:
+			#Use un-styled display
+			self.setStyleSheet('')
+		
 		self.instance = vlc.Instance()
 		self.player = self.instance.media_player_new()
 		#socket.setdefaulttimeout(5)
@@ -130,7 +134,11 @@ class MainWindow(windowClass):
 		self.searchField.returnPressed.connect(self.showSearchResultsPage)
 		self.searchField.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
 		self.toolBar.insertWidget(self.actionSettings, self.searchField)
-		self.toolBar.insertSeparator(self.actionSettings)
+		#self.toolBar.insertSeparator(self.actionSettings)
+		
+		try: #Qt > 4.7 has a placeholderText attribute, otherwise do nothing.
+			self.searchField.setPlaceholderText('Search...')
+		except: pass
 		
 		self.createTrayIcon()
 		
@@ -505,12 +513,9 @@ class MainWindow(windowClass):
 	
 	def searchItemDoubleClicked(self, item, column):
 		data = item.data
-		print data
-		#if data.get('isDir'):
-		#	self.showArtistPage(data.get('id'))
-		#else:
-		#	self.setActiveAlbum(data.get('id'))
-		#	self.showAlbumPage()
+		print data.keys()
+		print data.get('isDir', False)
+		
 	
 	def setActiveArtist(self, artistId):
 		self.albumModel.loadArtist(artistId)
@@ -522,11 +527,12 @@ class MainWindow(windowClass):
 		self.nowPlaying = song
 		self.currentSongChanged.emit(playlistIndex)
 		self.playlistModel.currentTrack = playlistIndex
-		self.updateCoverArt()
 		self.playlistModel.niceReset()
 		
 		self.stream(self.nowPlaying.get('id'))
+		
 		self.setWindowTitle('Subsonic Client :: %s - %s - %s'%(self.nowPlaying.get('title', 'Unknown'), self.nowPlaying.get('album', 'Unknown'), self.nowPlaying.get('artist', 'Unknown')))
+		
 	
 	def getPixmap(self, coverId):
 		return self.coverArtCache.get(coverId)

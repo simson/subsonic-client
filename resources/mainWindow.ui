@@ -18,46 +18,165 @@
     <normaloff>images/Subsonic.png</normaloff>images/Subsonic.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">/*
-QWidget{
-	color: rgb(157, 234, 255);
-	background-color: rgba(28, 21, 255, 20);
-	alternate-background-color: rgba(28, 21, 255, 30);
-}
+   <string notr="true">/*Set the background image/color*/
 QMainWindow{
-	background-color: qradialgradient(spread:pad, cx:0.779, cy:0.272545, radius:1.111, fx:0.352, fy:0.688, stop:0 rgba(0, 12, 108, 255), stop:1 rgba(14, 0, 255, 255));
+	background-image: url(&quot;images:background.png&quot;);
 }
-QWidget#centralwidget{
+
+/*Make the central widget transparent so the background shows through, along with other QWidget frames*/
+.QWidget{
 	background-color: rgba(0, 0, 0, 0);
 }
 
-QWidget#artistPage{
-	background-color: rgba(0, 0, 0, 0);
+/*top/bottom tool bar*/
+QToolBar{
+	border: 0px solid #FFFFFF;
 }
-QWidget#albumPage{
+
+/*Style the group boxes*/
+QGroupBox{
+	border: 1px solid rgb(40, 10, 180);
+	border-radius: 1px;
+	color: rgb(103, 202, 255);
+	padding-top: 10px;
+}
+
+/*Transparent scroll areas*/
+QAbstractScrollArea{
 	background-color: rgba(0, 0, 0, 0);
 }
 
 
-QListView#artistListView{
-	background-color: rgba(28, 21, 255, 20);
-	alternate-background-color: rgba(28, 21, 255, 30);
+/*Item views*/
+QAbstractItemView{
+	alternate-background-color: rgba(0, 0, 100, 70);
 }
-QListView#albumListView{
-	background-color: rgba(0, 0, 0, 0);
+QAbstractItemView::item{
+	background-color: rgba(3, 11, 163, 30);
+	color: rgb(100, 180, 230);
 }
-QTableView#trackTableView{
-	background-color: rgba(0, 0, 0, 0);
+
+QAbstractItemView::item:selected {
+	border: 0px solid  rgb(255, 179, 0);
 }
-QTableView#playlistTableView{
-	background-color: rgba(0, 0, 0, 0);
+
+QAbstractItemView::item:selected:!active {
+	/*background-color: rgba(42, 74, 255, 20);*/
+	color: rgb(255, 142, 28);
 }
-*/</string>
+
+QAbstractItemView::item:selected:active {
+	background-color: rgba(42, 74, 255, 30);
+	color: rgb(255, 142, 28);
+ }
+
+QAbstractItemView::item:hover {
+	color: rgb(255, 180, 30);
+}
+
+QSplitter::handle{
+	background-color: rgba(0, 0, 0, 80);
+	border-radius: 1px;
+	image: url(&quot;images:handle.png&quot;);
+}
+
+/*Item-view headers*/
+ QHeaderView::section {
+     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 rgb(58, 58, 58),
+									   stop: 0.5 rgb(68, 68, 68),
+                                       stop: 0.6 rgb(75, 75, 75),
+								       stop:1 rgb(48, 48, 48));
+     color: white;
+     padding-left: 4px;
+     border: 1px solid rgb(78, 78, 88);
+ }
+
+
+ /* style the sort indicator */
+ QHeaderView::down-arrow {
+     image: url(&quot;images:down_arrow.png&quot;);
+	width:12px;
+	height:12px;
+	right: 2px;
+ }
+
+ QHeaderView::up-arrow {
+     image: url(&quot;images:up_arrow.png&quot;);
+	width:12px;
+	height:12px;
+	right: 2px;
+}
+
+
+/*Scroll bars*/
+QScrollBar:vertical {
+	width: 16px;
+	padding: 22px 0px 22px 0px;
+	background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0.0112994 rgba(15, 15,15, 100), stop:1 rgba(91, 91, 91, 100));
+}
+
+ QScrollBar::handle:vertical {
+	border-radius: 2px;
+	min-height: 20px;
+	image: url(&quot;images:handle.png&quot;);
+	background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
+	border-top: 1px solid rgba(97, 97, 97, 100);
+ }
+
+ QScrollBar::sub-line:vertical {
+	border-radius: 2px;
+	image: url(&quot;images:uparrow.png&quot;);
+	min-height: 17px;
+	subcontrol-origin: margin;
+	background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
+	top: 2px;
+	border-top: 1px solid rgba(97, 97, 97, 100);
+ }
+
+ QScrollBar::add-line:vertical {
+	border-radius: 2px;
+	image: url(&quot;images:downarrow.png&quot;);
+	min-height: 17px;
+	subcontrol-origin: margin;
+	background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0.0113636 rgba(97, 97, 97, 100), stop:1 rgba(64, 64, 64, 100));
+	bottom: 2px;
+	border-top: 1px solid rgba(97, 97, 97, 100);
+ }
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+	background: none;
+}
+
+
+/*Seek slider*/
+ QSlider::groove:horizontal {
+	height: 0px;/* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4);
+	margin: 2px 0;
+ }
+
+QSlider::handle:horizontal {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+	border: 1px solid #5c5c5c;
+	width: 18px;
+	margin: -5px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+	border-radius: 5px;
+}
+
+QSlider::add-page:horizontal {
+	background: rgb(150, 150, 150);
+	border-radius: 2px;
+}
+
+QSlider::sub-page:horizontal {
+	background: rgb(83, 232, 255);
+	border-radius: 2px;
+}
+
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <property name="spacing">
      <number>0</number>
@@ -123,7 +242,7 @@ QTableView#playlistTableView{
        </property>
        <widget class="QStackedWidget" name="pageViews">
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="artistPage">
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -621,8 +740,10 @@ p, li { white-space: pre-wrap; }
                   <string>Play currently active song</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                  <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -660,8 +781,10 @@ border:0px;</string>
                   <string>Pause currently active song</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                  <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -696,8 +819,10 @@ border:0px;</string>
                   <string>Stop currently active song</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                  <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -732,8 +857,10 @@ border:0px;</string>
                   <string>Previous song in playlist</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                  <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -768,8 +895,10 @@ border:0px;</string>
                   <string>Next song in playlist</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                  <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -791,6 +920,9 @@ border:0px;</string>
                  <property name="maximum">
                   <number>10000</number>
                  </property>
+                 <property name="value">
+                  <number>1000</number>
+                 </property>
                  <property name="tracking">
                   <bool>true</bool>
                  </property>
@@ -799,6 +931,9 @@ border:0px;</string>
                  </property>
                  <property name="invertedControls">
                   <bool>false</bool>
+                 </property>
+                 <property name="tickInterval">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -888,6 +1023,15 @@ border:0px;</string>
                <property name="showGrid">
                 <bool>false</bool>
                </property>
+               <property name="gridStyle">
+                <enum>Qt::NoPen</enum>
+               </property>
+               <property name="cornerButtonEnabled">
+                <bool>false</bool>
+               </property>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
                <attribute name="verticalHeaderDefaultSectionSize">
                 <number>15</number>
                </attribute>
@@ -930,8 +1074,10 @@ border:0px;</string>
                 <string>Clear Playlist</string>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                </property>
                <property name="text">
                 <string/>
@@ -966,8 +1112,10 @@ border:0px;</string>
                 <string>Download playlist</string>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                </property>
                <property name="text">
                 <string/>
@@ -1002,8 +1150,10 @@ border:0px;</string>
                 <string>Save playlist</string>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                </property>
                <property name="text">
                 <string/>
@@ -1038,8 +1188,10 @@ border:0px;</string>
                 <string>Add song(s)</string>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                </property>
                <property name="text">
                 <string/>
@@ -1074,8 +1226,10 @@ border:0px;</string>
                 <string>Remove song(s)</string>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(255, 255, 255, 0);
-border:0px;</string>
+                <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	border:0px;
+}</string>
                </property>
                <property name="text">
                 <string/>
@@ -1117,6 +1271,9 @@ border:0px;</string>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
