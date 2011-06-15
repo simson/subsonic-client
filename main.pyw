@@ -83,6 +83,8 @@ class MainWindow(windowClass):
 		
 		self.instance = vlc.Instance()
 		self.player = self.instance.media_player_new()
+		self.log = self.instance.log_open()
+		
 		#socket.setdefaulttimeout(5)
 		
 		self.connection = connection.Connection(server, user, passwd, port, path, 'subsonic-desktop')
@@ -269,6 +271,7 @@ class MainWindow(windowClass):
 	
 	def tickEvent(self):
 		state = self.player.get_state()
+		print 'Messages:', self.log.count()
 		#Update the display state
 		if state == vlc.State.Playing:
 			self.statusbar.showMessage('Playing...')
