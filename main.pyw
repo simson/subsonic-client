@@ -117,6 +117,7 @@ class MainWindow(windowClass):
 		self.trackTableView.setModel(self.trackModel)
 		self.playlistTableView.setModel(self.playlistModel)
 		
+		self.playlistTableView.horizontalHeader().setMovable(True)
 		self.albumListView.setDragEnabled(True)
 		self.trackTableView.setDragEnabled(True)
 		self.playlistTableView.setDragEnabled(True)
