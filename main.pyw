@@ -204,6 +204,17 @@ class MainWindow(windowClass):
 		self.timer.setInterval(100)
 		self.timer.timeout.connect(self.tickEvent)
 		self.timer.start() #Start ticking!
+		
+		self.playlistTableView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+		self.playlistTableView.customContextMenuRequested.connect(self.showContextMenu)
+	
+	def showContextMenu(self, point):
+		menu = QtGui.QMenu(self.playlistTableView)
+		menu.addAction('test!', self.doTest)
+		menu.exec_(QtGui.QCursor.pos()-QtCore.QPoint(15, 10), defaultAction)
+		
+	def doTest(self):
+		print 'YAY!'
 	
 	def saveWindowState(self):
 		self.settings.setValue('windowGeometry', self.saveGeometry())
@@ -271,7 +282,7 @@ class MainWindow(windowClass):
 	
 	def tickEvent(self):
 		state = self.player.get_state()
-		print 'Messages:', self.log.count()
+		#print 'Messages:', self.log.count()
 		#Update the display state
 		if state == vlc.State.Playing:
 			self.statusbar.showMessage('Playing...')
