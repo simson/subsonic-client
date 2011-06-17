@@ -41,6 +41,10 @@ QGroupBox{
 	padding-top: 10px;
 }
 
+QTextBrowser{
+	color: rgb(83, 232, 255);
+}
+
 /*style buttons*/
 QPushButton{
 	border: 1px solid rgab(0, 0, 180, 50);
@@ -319,7 +323,7 @@ QSlider::sub-page:horizontal {
        </property>
        <widget class="QStackedWidget" name="pageViews">
         <property name="currentIndex">
-         <number>2</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="artistPage">
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -658,6 +662,21 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb
           </property>
           <item>
            <widget class="QTextBrowser" name="textBrowser_4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>130</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="html">
              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -670,7 +689,16 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; * libvlc and c-types wrapper (VideoLAN) - http://www.videolan.org http://wiki.videolan.org/Python_bindings&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; * PyQt4 (Riverbank/Nokia) - http://www.riverbankcomputing.co.uk/software/pyqt/intro&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
+            <property name="openExternalLinks">
+             <bool>false</bool>
+            </property>
+            <property name="openLinks">
+             <bool>false</bool>
+            </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QTextBrowser" name="vlcLogOutput"/>
           </item>
          </layout>
         </widget>
