@@ -191,6 +191,7 @@ class MainWindow(windowClass):
 		self.nowPlaying = {}
 		self.nowSelected = {}
 		self.lastSearch = ''
+		self.lastError = 0
 		
 		try:
 			f = open(clientPlaylist, 'rb')
@@ -283,7 +284,11 @@ class MainWindow(windowClass):
 	
 	def tickEvent(self):
 		state = self.player.get_state()
-		#print 'Messages:', self.log.count()
+		if self.log.count()>self.lastError:
+			errorMsgs = self.log.dump()
+			for message in errorMsgs[self.lastError:]:
+				self.vlcLogOutput.append(message)
+		self.lastError = self.log.count()
 		#Update the display state
 		if state == vlc.State.Playing:
 			self.statusbar.showMessage('Playing...')
