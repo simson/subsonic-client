@@ -176,6 +176,8 @@ class MainWindow(windowClass):
 		self.playlistClearBtn.clicked.connect(self.clearPlaylist)
 		self.playlistShuffleBtn.clicked.connect(self.playlistModel.shuffle)
 		
+		self.createRandomPlaylistBtn.clicked.connect(self.playlistModel.loadRandomSongs)
+		
 		self.seekSlider.sliderMoved.connect(self.seek)
 		self.seekSlider.sliderPressed.connect(self.startSeek)
 		self.seekSlider.sliderReleased.connect(self.stopSeek)
@@ -200,8 +202,6 @@ class MainWindow(windowClass):
 			self.playlistModel.addSongs(songs)
 		except: pass #Didnt exist, or error loading playlists. Not a big deal..
 		
-		self.playlistModel.loadRandomSongs()
-		
 		self.timer = QtCore.QTimer(self)
 		self.timer.setInterval(100)
 		self.timer.timeout.connect(self.tickEvent)
@@ -213,7 +213,7 @@ class MainWindow(windowClass):
 	def showContextMenu(self, point):
 		menu = QtGui.QMenu(self.playlistTableView)
 		menu.addAction('test!', self.doTest)
-		menu.exec_(QtGui.QCursor.pos()-QtCore.QPoint(15, 10), defaultAction)
+		menu.exec_(QtGui.QCursor.pos()-QtCore.QPoint(15, 10))
 		
 	def doTest(self):
 		print 'YAY!'
