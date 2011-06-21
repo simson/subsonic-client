@@ -323,7 +323,7 @@ QSlider::sub-page:horizontal {
        </property>
        <widget class="QStackedWidget" name="pageViews">
         <property name="currentIndex">
-         <number>5</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="artistPage">
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -635,7 +635,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb
             <property name="title">
              <string>Random Playlist</string>
             </property>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="createRandomPlaylistBtn">
              <property name="geometry">
               <rect>
                <x>14</x>
